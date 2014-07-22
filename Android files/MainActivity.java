@@ -4,12 +4,10 @@ import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
 
-//import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-//import android.hardware.SensorListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.Menu;
@@ -22,16 +20,26 @@ public class MainActivity extends Activity implements SensorEventListener {
 	private Socket socket;
 	
 	private static final int SERVERPORT = 5000;
-	private static final String SERVER_IP = "10.0.2.2"; 
+	private static final String SERVER_IP = "10.0.2.2";
 	
 	// Accelerometer X, Y, and Z values
 	private TextView accelXValue;
 	private TextView accelYValue;
 	private TextView accelZValue;
+	byte[] arg1 = new byte[8];
+	byte[] arg2 = new byte[8];
+	byte[] arg3 = new byte[8];
+	
 	// Orientation X, Y, and Z values
-	/**private TextView orientXValue;
+	private TextView orientXValue;
 	private TextView orientYValue;
-	private TextView orientZValue;*/
+	private TextView orientZValue;
+	byte[] arg4 = new byte[8];
+	byte[] arg5 = new byte[8];
+	byte[] arg6 = new byte[8];
+	double angX=0, angY=0, angZ=0;
+	long orientTime = 0;
+	
 	private SensorManager sensorManager = null;
 	
     @Override
@@ -47,9 +55,9 @@ public class MainActivity extends Activity implements SensorEventListener {
         accelZValue = (TextView) findViewById(R.id.accel_z_value);
       
         // Capture orientation related view elements
-        /**orientXValue = (TextView) findViewById(R.id.orient_x_value);
+        orientXValue = (TextView) findViewById(R.id.orient_x_value);
         orientYValue = (TextView) findViewById(R.id.orient_y_value);
-        orientZValue = (TextView) findViewById(R.id.orient_z_value);*/
+        orientZValue = (TextView) findViewById(R.id.orient_z_value);
       
         // Initialize accelerometer related view elements
         accelXValue.setText("0.00");
@@ -57,9 +65,9 @@ public class MainActivity extends Activity implements SensorEventListener {
         accelZValue.setText("0.00");
       
         // Initialize orientation related view elements
-        /**orientXValue.setText("0.00");
+        orientXValue.setText("0.00");
         orientYValue.setText("0.00");
-        orientZValue.setText("0.00");*/
+        orientZValue.setText("0.00");
         
         // start ClientThread
         new Thread(new ClientThread()).start();
@@ -82,22 +90,47 @@ public class MainActivity extends Activity implements SensorEventListener {
     // This method will update the UI on new sensor events
     public void onSensorChanged(SensorEvent sensorEvent) {
 	    synchronized (this) {
-		    if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-			    accelXValue.setText(Float.toString(sensorEvent.values[0]));
-			    accelYValue.setText(Float.toString(sensorEvent.values[1]));
-			    accelZValue.setText(Float.toString(sensorEvent.values[2]));    
+		    if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER ||
+		    		sensorEvent.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+		    	if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
+				    accelXValue.setText(Float.toString(sensorEvent.values[0]));
+				    accelYValue.setText(Float.toString(sensorEvent.values[1]));
+				    accelZValue.setText(Float.toString(sensorEvent.values[2])); 
+			    	arg1 = new byte[8];
+			    	ByteBuffer.wrap(arg1).putDouble(sensorEvent.values[0]);
+			    	arg2 = new byte[8];
+			    	ByteBuffer.wrap(arg2).putDouble(sensorEvent.values[1]);
+			    	arg3 = new byte[8]; 
+			    	ByteBuffer.wrap(arg3).putDouble(sensorEvent.values[2]);
+		    	}
+		    	if (sensorEvent.sensor.getType() == Sensor.TYPE_GYROSCOPE){
+		    		if (orientTime != 0){
+			    		double DTime = (sensorEvent.timestamp - orientTime)/1000000000.0f;
+			    		orientTime = System.nanoTime();
+					    angX += sensorEvent.values[0] * DTime * 180 / Math.PI;
+					    angY += sensorEvent.values[1] * DTime * 180 / Math.PI;
+					    angZ += sensorEvent.values[2] * DTime * 180 / Math.PI;
+					    orientXValue.setText(Double.toString(angX));
+					    orientYValue.setText(Double.toString(angY));
+					    orientZValue.setText(Double.toString(angZ));
+				    	arg4 = new byte[8];
+				    	ByteBuffer.wrap(arg4).putDouble(angX);
+				    	arg5 = new byte[8];
+				    	ByteBuffer.wrap(arg5).putDouble(angY);
+				    	arg6 = new byte[8]; 
+				    	ByteBuffer.wrap(arg6).putDouble(angZ);
+		    		}
+		    		orientTime = sensorEvent.timestamp;
+		    	}
 			    
 			    try {
-			    	byte[] arg1 = new byte[8];
-			    	ByteBuffer.wrap(arg1).putDouble(sensorEvent.values[0]);
-			    	byte[] arg2 = new byte[8];
-			    	ByteBuffer.wrap(arg2).putDouble(sensorEvent.values[1]);
-			    	byte[] arg3 = new byte[8]; 
-			    	ByteBuffer.wrap(arg3).putDouble(sensorEvent.values[2]);
-			    	byte[] args = new byte[24]; 
+			    	byte[] args = new byte[48]; 
 			    	for (int i=0; i<8; i++) args[i] = arg1[i];
 			    	for (int i=0; i<8; i++) args[i+8] = arg2[i];
 			    	for (int i=0; i<8; i++) args[i+16] = arg3[i];
+			    	for (int i=0; i<8; i++) args[i+24] = arg4[i];
+			    	for (int i=0; i<8; i++) args[i+32] = arg5[i];
+			    	for (int i=0; i<8; i++) args[i+40] = arg6[i];
 			    	OutputStream out = socket.getOutputStream();
 			    	out.write(args);
 			    } catch (UnknownHostException e) {
@@ -109,12 +142,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 			    }
 			    
 		    }
-    
-		    /**if (sensorEvent.sensor.getType() == Sensor.TYPE_ORIENTATION) {
-			    orientXValue.setText(Float.toString(sensorEvent.values[0]));
-			    orientYValue.setText(Float.toString(sensorEvent.values[1]));
-			    orientZValue.setText(Float.toString(sensorEvent.values[2]));    
-		    }*/
 	    }
     }
   
@@ -128,14 +155,12 @@ public class MainActivity extends Activity implements SensorEventListener {
 	    super.onResume();
 	    // Register this class as a listener for the accelerometer sensor
 	    sensorManager.registerListener((SensorEventListener) this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-	    // ...and the orientation sensor
-	    //sensorManager.registerListener((SensorEventListener) this, sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_NORMAL);
+	    // ...and the gyroscope sensor
+	    sensorManager.registerListener((SensorEventListener) this, sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE), SensorManager.SENSOR_DELAY_NORMAL);
     }
   
     @Override
     protected void onStop() {
-	    // Unregister the listener
-	    //sensorManager.unregisterListener((SensorListener) this);
 	    super.onStop();
     }
 	
