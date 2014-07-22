@@ -10,8 +10,10 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements SensorEventListener {
@@ -40,14 +42,22 @@ public class MainActivity extends Activity implements SensorEventListener {
 	double angX=0, angY=0, angZ=0;
 	long orientTime = 0;
 	
+	// progressbar
+	private SeekBar seekBar;
+	int progStat = 50;
+	
 	private SensorManager sensorManager = null;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        //pregressBar
+        seekBar = (SeekBar) findViewById(R.id.seekBar1);
+        //seekBar.setMax(100);
+        
         // Get a reference to a SensorManager
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        setContentView(R.layout.activity_main);
       
         // Capture accelerometer related view elements
         accelXValue = (TextView) findViewById(R.id.accel_x_value);
@@ -119,6 +129,13 @@ public class MainActivity extends Activity implements SensorEventListener {
 				    	ByteBuffer.wrap(arg5).putDouble(angY);
 				    	arg6 = new byte[8]; 
 				    	ByteBuffer.wrap(arg6).putDouble(angZ);
+				    	progStat = -(int)angZ/2+50;
+				    	try {
+				    		seekBar.setProgress(progStat);
+				    	} catch (NullPointerException e){
+				    		Log.w("myApp", "NullPointe!!!!!");
+				    		orientXValue.setText("asd");
+				    	}
 		    		}
 		    		orientTime = sensorEvent.timestamp;
 		    	}
@@ -156,7 +173,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 	    // Register this class as a listener for the accelerometer sensor
 	    sensorManager.registerListener((SensorEventListener) this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
 	    // ...and the gyroscope sensor
-	    sensorManager.registerListener((SensorEventListener) this, sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE), SensorManager.SENSOR_DELAY_NORMAL);
+	    sensorManager.registerListener((SensorEventListener) this, sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE), SensorManager.SENSOR_DELAY_NORMAL);;
     }
   
     @Override

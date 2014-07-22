@@ -285,7 +285,6 @@ int id orient_y_value 0x7f050047
 int id orient_z_label 0x7f050048
 int id orient_z_value 0x7f050049
 int id orientation_label 0x7f050043
-int id progressBar1 0x7f05004a
 int id progress_circular 0x7f050018
 int id progress_horizontal 0x7f050019
 int id radio 0x7f05002f
@@ -299,6 +298,7 @@ int id search_mag_icon 0x7f050035
 int id search_plate 0x7f050036
 int id search_src_text 0x7f050037
 int id search_voice_btn 0x7f05003b
+int id seekBar1 0x7f05004a
 int id shortcut 0x7f05002e
 int id showCustom 0x7f050007
 int id showHome 0x7f050004

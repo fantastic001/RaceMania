@@ -1130,7 +1130,6 @@ containing a value of this type.
         public static final int orient_z_label=0x7f050048;
         public static final int orient_z_value=0x7f050049;
         public static final int orientation_label=0x7f050043;
-        public static final int progressBar1=0x7f05004a;
         public static final int progress_circular=0x7f050018;
         public static final int progress_horizontal=0x7f050019;
         public static final int radio=0x7f05002f;
@@ -1144,6 +1143,7 @@ containing a value of this type.
         public static final int search_plate=0x7f050036;
         public static final int search_src_text=0x7f050037;
         public static final int search_voice_btn=0x7f05003b;
+        public static final int seekBar1=0x7f05004a;
         public static final int shortcut=0x7f05002e;
         public static final int showCustom=0x7f050007;
         public static final int showHome=0x7f050004;
