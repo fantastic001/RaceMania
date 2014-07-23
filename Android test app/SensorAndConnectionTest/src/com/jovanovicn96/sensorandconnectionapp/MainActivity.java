@@ -1,7 +1,5 @@
 package com.jovanovicn96.sensorandconnectionapp;
 
-import java.io.*;
-import java.net.*;
 import java.nio.ByteBuffer;
 
 import android.app.Activity;
@@ -16,13 +14,16 @@ import android.view.MenuItem;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.jovanovicn96.sensorandconnectionapp.UDPClient;
+
 public class MainActivity extends Activity implements SensorEventListener {
 
-	// TCP/IP initializations
-	private Socket socket;
-	
 	private static final int SERVERPORT = 5000;
 	private static final String SERVER_IP = "10.0.2.2";
+	
+	// TCP/IP initializations
+	UDPClient udpClient;
+	
 	
 	// Accelerometer X, Y, and Z values
 	private TextView accelXValue;
@@ -42,7 +43,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 	double angX=0, angY=0, angZ=0;
 	long orientTime = 0;
 	
-	// progressbar
+	// seekBar
 	private SeekBar seekBar;
 	int progStat = 50;
 	
@@ -54,7 +55,12 @@ public class MainActivity extends Activity implements SensorEventListener {
         setContentView(R.layout.activity_main);
         //pregressBar
         seekBar = (SeekBar) findViewById(R.id.seekBar1);
-        //seekBar.setMax(100);
+        
+        try {
+			udpClient = new UDPClient(SERVER_IP, SERVERPORT);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
         
         // Get a reference to a SensorManager
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -78,23 +84,6 @@ public class MainActivity extends Activity implements SensorEventListener {
         orientXValue.setText("0.00");
         orientYValue.setText("0.00");
         orientZValue.setText("0.00");
-        
-        // start ClientThread
-        new Thread(new ClientThread()).start();
-    }
-    
-    class ClientThread implements Runnable {
-        @Override
-        public void run() {
-        	try {
-        		InetAddress serverAddr = InetAddress.getByName(SERVER_IP);
-        		socket = new Socket(serverAddr, SERVERPORT);
-        		} catch (UnknownHostException e1) {
-        			e1.printStackTrace();
-        		} catch (IOException e1) {
-        			e1.printStackTrace();
-        		}
-        }		 
     }
   
     // This method will update the UI on new sensor events
@@ -139,21 +128,17 @@ public class MainActivity extends Activity implements SensorEventListener {
 		    		}
 		    		orientTime = sensorEvent.timestamp;
 		    	}
-			    
+		    	
+		    	byte[] args = new byte[48]; 
+		    	for (int i=0; i<8; i++) args[i] = arg1[i];
+		    	for (int i=0; i<8; i++) args[i+8] = arg2[i];
+		    	for (int i=0; i<8; i++) args[i+16] = arg3[i];
+		    	for (int i=0; i<8; i++) args[i+24] = arg4[i];
+		    	for (int i=0; i<8; i++) args[i+32] = arg5[i];
+		    	for (int i=0; i<8; i++) args[i+40] = arg6[i];
+		    	
 			    try {
-			    	byte[] args = new byte[48]; 
-			    	for (int i=0; i<8; i++) args[i] = arg1[i];
-			    	for (int i=0; i<8; i++) args[i+8] = arg2[i];
-			    	for (int i=0; i<8; i++) args[i+16] = arg3[i];
-			    	for (int i=0; i<8; i++) args[i+24] = arg4[i];
-			    	for (int i=0; i<8; i++) args[i+32] = arg5[i];
-			    	for (int i=0; i<8; i++) args[i+40] = arg6[i];
-			    	OutputStream out = socket.getOutputStream();
-			    	out.write(args);
-			    } catch (UnknownHostException e) {
-			    	e.printStackTrace();
-			    } catch (IOException e) {
-			    	e.printStackTrace();
+			    	udpClient.send(args);
 			    } catch (Exception e) {
 			    	e.printStackTrace();
 			    }
@@ -178,6 +163,7 @@ public class MainActivity extends Activity implements SensorEventListener {
   
     @Override
     protected void onStop() {
+    	udpClient.close();
 	    super.onStop();
     }
 	
