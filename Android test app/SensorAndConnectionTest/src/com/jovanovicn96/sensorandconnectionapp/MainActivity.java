@@ -41,7 +41,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 	byte[] arg4 = new byte[8];
 	byte[] arg5 = new byte[8];
 	byte[] arg6 = new byte[8];
-	double angX=0, angY=0, angZ=0;
+	float angX=0, angY=0, angZ=0;
 	long orientTime = 0;
 	
 	// seekBar
@@ -96,12 +96,12 @@ public class MainActivity extends Activity implements SensorEventListener {
 				    accelXValue.setText(Float.toString(sensorEvent.values[0]));
 				    accelYValue.setText(Float.toString(sensorEvent.values[1]));
 				    accelZValue.setText(Float.toString(sensorEvent.values[2])); 
-			    	arg1 = new byte[8];
-			    	ByteBuffer.wrap(arg1).putDouble(sensorEvent.values[0]);
-			    	arg2 = new byte[8];
-			    	ByteBuffer.wrap(arg2).putDouble(sensorEvent.values[1]);
-			    	arg3 = new byte[8]; 
-			    	ByteBuffer.wrap(arg3).putDouble(sensorEvent.values[2]);
+			    	arg1 = new byte[4];
+			    	ByteBuffer.wrap(arg1).putInt(Math.round(sensorEvent.values[0] * 1000));
+			    	arg2 = new byte[4];
+			    	ByteBuffer.wrap(arg2).putInt(Math.round(sensorEvent.values[1] * 1000));
+			    	arg3 = new byte[4]; 
+			    	ByteBuffer.wrap(arg3).putInt(Math.round(sensorEvent.values[2] * 1000));
 		    	}
 		    	if (sensorEvent.sensor.getType() == Sensor.TYPE_GYROSCOPE){
 		    		if (orientTime != 0){
@@ -113,31 +113,30 @@ public class MainActivity extends Activity implements SensorEventListener {
 					    orientXValue.setText(Double.toString(angX));
 					    orientYValue.setText(Double.toString(angY));
 					    orientZValue.setText(Double.toString(angZ));
-				    	arg4 = new byte[8];
-				    	ByteBuffer.wrap(arg4).putDouble(angX);
-				    	arg5 = new byte[8];
-				    	ByteBuffer.wrap(arg5).putDouble(angY);
-				    	arg6 = new byte[8]; 
-				    	ByteBuffer.wrap(arg6).putDouble(angZ);
+				    	arg4 = new byte[4];
+				    	ByteBuffer.wrap(arg4).putInt(Math.round(angX * 1000));
+				    	arg5 = new byte[4];
+				    	ByteBuffer.wrap(arg5).putInt(Math.round(angY * 1000));
+				    	arg6 = new byte[4]; 
+				    	ByteBuffer.wrap(arg6).putInt(Math.round(angZ * 1000));
 				    	progStat = -(int)angZ/2+50;
 				    	try {
 				    		seekBar.setProgress(progStat);
 				    	} catch (NullPointerException e){
-				    		Log.w("myApp", "NullPointe!!!!!");
-				    		orientXValue.setText("asd");
+				    		// TODO
 				    	}
 		    		}
 		    		orientTime = sensorEvent.timestamp;
 		    	}
 		    	
-		    	byte[] args = new byte[49]; 
-		    	for (int i=0; i<8; i++) args[i] = arg1[i];
-		    	for (int i=0; i<8; i++) args[i+8] = arg2[i];
-		    	for (int i=0; i<8; i++) args[i+16] = arg3[i];
-		    	for (int i=0; i<8; i++) args[i+24] = arg4[i];
-		    	for (int i=0; i<8; i++) args[i+32] = arg5[i];
-		    	for (int i=0; i<8; i++) args[i+40] = arg6[i];
-			args[48] = 65;
+		    	byte[] args = new byte[25]; 
+		    	for (int i=0; i<4; i++) args[i] = arg1[i];
+		    	for (int i=0; i<4; i++) args[i+4] = arg2[i];
+		    	for (int i=0; i<4; i++) args[i+8] = arg3[i];
+		    	for (int i=0; i<4; i++) args[i+12] = arg4[i];
+		    	for (int i=0; i<4; i++) args[i+16] = arg5[i];
+		    	for (int i=0; i<4; i++) args[i+20] = arg6[i];
+		    	args[24] = 65;
 		    	
 			    try {
 			    	udpClient.send(args);
