@@ -20,8 +20,9 @@ public class MainActivity extends Activity implements SensorEventListener {
 
 	private static final int SERVERPORT = 5000;
 	private static final String SERVER_IP = "10.0.2.2";
+	private static final int ResiveMessageLength = 48;
 	
-	// TCP/IP initializations
+	// UDP/IP initializations
 	UDPClient udpClient;
 	
 	
@@ -57,7 +58,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         seekBar = (SeekBar) findViewById(R.id.seekBar1);
         
         try {
-			udpClient = new UDPClient(SERVER_IP, SERVERPORT);
+			udpClient = new UDPClient(SERVER_IP, SERVERPORT, ResiveMessageLength);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

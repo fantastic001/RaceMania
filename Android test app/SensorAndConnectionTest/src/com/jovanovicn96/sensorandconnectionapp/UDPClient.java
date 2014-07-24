@@ -5,16 +5,17 @@ import java.net.*;
 
 public class UDPClient {
 	
-	static BufferedReader inFromUser;
-	static DatagramSocket clientSocket;
-	static InetAddress IPAddress;
-	static int port;
+	BufferedReader inFromUser;
+	DatagramSocket clientSocket;
+	InetAddress IPAddress;
+	int port, resivemessln;
 	
-	public UDPClient(String IA, int po) throws Exception {
+	public UDPClient(String IA, int po, int resmessln) throws Exception {
 		inFromUser = new BufferedReader(new InputStreamReader(System.in));
 		clientSocket = new DatagramSocket();
 		IPAddress = InetAddress.getByName(IA);
 		port = po;
+		resivemessln = resmessln;
 	}
 	
 	public void send(byte message[]){
@@ -28,7 +29,7 @@ public class UDPClient {
 	}
 	
 	public byte[] resive(){
-		byte[] receiveData = new byte[48]; //duzina niza promenljivih za resive u bajtovima
+		byte[] receiveData = new byte[resivemessln];
 		for (int i=0; i<48; i++) receiveData[i] = (byte) 0;
 		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 		try {
