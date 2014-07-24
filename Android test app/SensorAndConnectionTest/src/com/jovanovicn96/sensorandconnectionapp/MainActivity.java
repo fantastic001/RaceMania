@@ -8,23 +8,25 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jovanovicn96.sensorandconnectionapp.UDPClient;
 
 public class MainActivity extends Activity implements SensorEventListener {
 
 	private static final int SERVERPORT = 5000;
-	private static final String SERVER_IP = "192.168.1.101";
+	private static String SERVER_IP = "192.168.0.156";
 	private static final int ResiveMessageLength = 48;
 	
 	// UDP/IP initializations
 	UDPClient udpClient;
-	
 	
 	// Accelerometer X, Y, and Z values
 	private TextView accelXValue;
@@ -48,11 +50,15 @@ public class MainActivity extends Activity implements SensorEventListener {
 	private SeekBar seekBar;
 	int progStat = 50;
 	
+	// IP UI
+	private EditText IPadress;
+	
 	private SensorManager sensorManager = null;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         //pregressBar
         seekBar = (SeekBar) findViewById(R.id.seekBar1);
@@ -65,6 +71,9 @@ public class MainActivity extends Activity implements SensorEventListener {
         
         // Get a reference to a SensorManager
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        
+        // Capture IP UI
+        IPadress = (EditText) findViewById(R.id.editText1);
       
         // Capture accelerometer related view elements
         accelXValue = (TextView) findViewById(R.id.accel_x_value);
@@ -123,7 +132,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 				    	try {
 				    		seekBar.setProgress(progStat);
 				    	} catch (NullPointerException e){
-				    		// TODO
+					    	e.printStackTrace();
 				    	}
 		    		}
 		    		orientTime = sensorEvent.timestamp;
@@ -148,6 +157,17 @@ public class MainActivity extends Activity implements SensorEventListener {
 	    }
     }
   
+    public void SetIP(View view){
+    	SERVER_IP = IPadress.getText().toString();
+    	udpClient.close();
+    	try {
+			udpClient = new UDPClient(SERVER_IP, SERVERPORT, ResiveMessageLength);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	Toast.makeText(MainActivity.this, "IP Changed", Toast.LENGTH_SHORT).show();
+    }
+    
     // I've chosen to not implement this method
     public void onAccuracyChanged(Sensor arg0, int arg1) {
     	// TODO Auto-generated method stub

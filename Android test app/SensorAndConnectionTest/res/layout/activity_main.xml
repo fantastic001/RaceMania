@@ -4,115 +4,153 @@
     android:stretchColumns="1" >
 
     <TableRow>
+
         <TextView
             android:id="@+id/accelerometer_label"
             android:layout_column="1"
+            android:padding="3dip"
             android:text="Accelerometer"
-            android:textSize="9pt"
-            android:padding="3dip" />
+            android:textSize="9pt" />
     </TableRow>
-  
+
     <TableRow>
+
         <TextView
             android:id="@+id/accel_x_label"
             android:layout_column="1"
+            android:padding="3dip"
             android:text="X:"
-            android:textSize="8pt"
-            android:padding="3dip" />
+            android:textSize="8pt" />
+
         <TextView
             android:id="@+id/accel_x_value"
             android:gravity="right"
-            android:textSize="8pt"
-            android:padding="3dip" />
+            android:padding="3dip"
+            android:textSize="8pt" />
     </TableRow>
 
     <TableRow>
+
         <TextView
             android:id="@+id/accel_y_label"
             android:layout_column="1"
+            android:padding="3dip"
             android:text="Y:"
-            android:textSize="8pt"
-            android:padding="3dip" />
+            android:textSize="8pt" />
+
         <TextView
             android:id="@+id/accel_y_value"
             android:gravity="right"
-            android:textSize="8pt"
-            android:padding="3dip" />
+            android:padding="3dip"
+            android:textSize="8pt" />
     </TableRow>
 
     <TableRow>
+
         <TextView
             android:id="@+id/accel_z_label"
             android:layout_column="1"
+            android:padding="3dip"
             android:text="Z:"
-            android:textSize="8pt"
-            android:padding="3dip" />
+            android:textSize="8pt" />
+
         <TextView
             android:id="@+id/accel_z_value"
             android:gravity="right"
-            android:textSize="8pt"
-            android:padding="3dip" />
+            android:padding="3dip"
+            android:textSize="8pt" />
     </TableRow>
 
     <View
         android:layout_height="2dip"
         android:background="#FF909090" />
-      
-	<TableRow>
+
+    <TableRow>
+
         <TextView
             android:id="@+id/orientation_label"
             android:layout_column="1"
+            android:padding="3dip"
             android:text="Orientation"
-            android:textSize="9pt"
-            android:padding="3dip" />
+            android:textSize="9pt" />
     </TableRow>
-  
+
     <TableRow>
+
         <TextView
             android:id="@+id/orient_x_label"
             android:layout_column="1"
+            android:padding="3dip"
             android:text="X:"
-            android:textSize="8pt"
-            android:padding="3dip" />
+            android:textSize="8pt" />
+
         <TextView
             android:id="@+id/orient_x_value"
             android:gravity="right"
-            android:textSize="8pt"
-            android:padding="3dip" />
+            android:padding="3dip"
+            android:textSize="8pt" />
     </TableRow>
 
     <TableRow>
+
         <TextView
             android:id="@+id/orient_y_label"
             android:layout_column="1"
+            android:padding="3dip"
             android:text="Y:"
-            android:textSize="8pt"
-            android:padding="3dip" />
+            android:textSize="8pt" />
+
         <TextView
             android:id="@+id/orient_y_value"
             android:gravity="right"
-            android:textSize="8pt"
-            android:padding="3dip" />
+            android:padding="3dip"
+            android:textSize="8pt" />
     </TableRow>
 
     <TableRow>
+
         <TextView
             android:id="@+id/orient_z_label"
             android:layout_column="1"
+            android:padding="3dip"
             android:text="Z:"
-            android:textSize="8pt"
-            android:padding="3dip" />
+            android:textSize="8pt" />
+
         <TextView
             android:id="@+id/orient_z_value"
             android:gravity="right"
-            android:textSize="8pt"
-            android:padding="3dip" />
-
+            android:padding="3dip"
+            android:textSize="8pt" />
     </TableRow>
 
     <View
         android:layout_height="2dip"
         android:background="#FF909090" />
+
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/button1"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set IP"
+            android:onClick="SetIP" />
+
+        <EditText
+            android:id="@+id/editText1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Server IP adress" >
+
+            <requestFocus />
+        </EditText>
+
+    </TableRow>
 
     <SeekBar
         android:id="@+id/seekBar1"
