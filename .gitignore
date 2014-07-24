@@ -6,3 +6,8 @@ Android test app/SensorAndConnectionTest/gen/R.java.d
 Android test app/SensorAndConnectionTest/libs/android-support-v7-appcompat.jar
 Android test app/SensorAndConnectionTest/local.properties
 Android test app/SensorAndConnectionTest/project.properties
+Android test app/SensorAndConnectionTest/build.sh
+
+src/*.sh
+src/test
+

@@ -19,7 +19,7 @@ import com.jovanovicn96.sensorandconnectionapp.UDPClient;
 public class MainActivity extends Activity implements SensorEventListener {
 
 	private static final int SERVERPORT = 5000;
-	private static final String SERVER_IP = "10.0.2.2";
+	private static final String SERVER_IP = "192.168.1.102";
 	private static final int ResiveMessageLength = 48;
 	
 	// UDP/IP initializations
