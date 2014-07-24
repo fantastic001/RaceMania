@@ -19,7 +19,7 @@ import com.jovanovicn96.sensorandconnectionapp.UDPClient;
 public class MainActivity extends Activity implements SensorEventListener {
 
 	private static final int SERVERPORT = 5000;
-	private static final String SERVER_IP = "192.168.1.102";
+	private static final String SERVER_IP = "192.168.1.101";
 	private static final int ResiveMessageLength = 48;
 	
 	// UDP/IP initializations
@@ -130,13 +130,14 @@ public class MainActivity extends Activity implements SensorEventListener {
 		    		orientTime = sensorEvent.timestamp;
 		    	}
 		    	
-		    	byte[] args = new byte[48]; 
+		    	byte[] args = new byte[49]; 
 		    	for (int i=0; i<8; i++) args[i] = arg1[i];
 		    	for (int i=0; i<8; i++) args[i+8] = arg2[i];
 		    	for (int i=0; i<8; i++) args[i+16] = arg3[i];
 		    	for (int i=0; i<8; i++) args[i+24] = arg4[i];
 		    	for (int i=0; i<8; i++) args[i+32] = arg5[i];
 		    	for (int i=0; i<8; i++) args[i+40] = arg6[i];
+			args[48] = 65;
 		    	
 			    try {
 			    	udpClient.send(args);
