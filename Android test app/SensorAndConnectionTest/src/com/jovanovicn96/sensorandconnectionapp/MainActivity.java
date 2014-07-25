@@ -8,6 +8,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -60,6 +61,11 @@ public class MainActivity extends Activity implements SensorEventListener {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+        
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
         //pregressBar
         seekBar = (SeekBar) findViewById(R.id.seekBar1);
         
@@ -147,8 +153,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 		    	for (int i=0; i<4; i++) args[i+20] = arg6[i];
 		    	args[24] = 65;
 		    	
-			udpClient.send(args);
-			System.out.println("RACEMANIA: Error while sending data");
+		    	udpClient.send(args);
+		    	//System.out.println("RACEMANIA: Error while sending data");
 			    
 		    }
 	    }

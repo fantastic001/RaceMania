@@ -11,7 +11,7 @@ public class UDPClient {
 	int port, resivemessln;
 	
 	public UDPClient(String IA, int po, int resmessln) throws Exception {
-		System.out.println("RACEMANIA: Creating socket");
+		//System.out.println("RACEMANIA: Creating socket");
 		inFromUser = new BufferedReader(new InputStreamReader(System.in));
 		clientSocket = new DatagramSocket();
 		IPAddress = InetAddress.getByName(IA);
@@ -21,27 +21,13 @@ public class UDPClient {
 	
 	public void send(byte message[]) 
 	{
-		System.out.println("RACEMANIA: Sending data");
+		//System.out.println("RACEMANIA: Sending data");
 		byte[] sendData = message;
 		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
 		try {
 			clientSocket.send(sendPacket);
-		} 
-		catch (SecurityException e) 
-		{
-			System.out.println("RACEMANIA: Security error");
-		}
-		catch (PortUnreachableException e) 
-		{
-			System.out.println("RACEMANIA: Port unreachable");
-		}
-		catch (IllegalArgumentException e) 
-		{
-			System.out.println("RACEMANIA: Something is messed up with packets and all shits sitting around.");
-		}
-		catch (IOException e) 
-		{
-			System.out.println("RACEMANIA: I/O error");
+		} catch (Exception e){
+			e.printStackTrace();
 		}
 	}
 	
