@@ -150,7 +150,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 			    try {
 			    	udpClient.send(args);
 			    } catch (Exception e) {
-				Toast.makeText(MainActivity.this, "Error while sending", Toast.LENGTH_SHORT).show();
 			    	e.printStackTrace();
 			    }
 			    
