@@ -33,19 +33,21 @@ public class MainActivity extends Activity implements SensorEventListener {
 	private TextView accelXValue;
 	private TextView accelYValue;
 	private TextView accelZValue;
-	byte[] arg1 = new byte[8];
-	byte[] arg2 = new byte[8];
-	byte[] arg3 = new byte[8];
+	byte[] arg1 = new byte[4];
+	byte[] arg2 = new byte[4];
+	byte[] arg3 = new byte[4];
 	
 	// Orientation X, Y, and Z values
 	private TextView orientXValue;
 	private TextView orientYValue;
 	private TextView orientZValue;
-	byte[] arg4 = new byte[8];
-	byte[] arg5 = new byte[8];
-	byte[] arg6 = new byte[8];
+	byte[] arg4 = new byte[4];
+	byte[] arg5 = new byte[4];
+	byte[] arg6 = new byte[4];
 	float angX=0, angY=0, angZ=0;
 	long orientTime = 0;
+	
+	byte[] byteSwap = new byte[256];
 	
 	// seekBar
 	private SeekBar seekBar;
@@ -74,6 +76,20 @@ public class MainActivity extends Activity implements SensorEventListener {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+        
+        int i, two;
+        
+        for (i=0; i<256; i++) byteSwap[i] = 0;
+        
+        for (i=0; i<256; i++){
+    		two=2;
+    		for (int j=0; j<7; j++){
+    			if (i % two == 1){
+    				byteSwap [i] += 128/two;
+    				two *= 2;
+    			}
+    		}
+        }
         
         // Get a reference to a SensorManager
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -125,6 +141,9 @@ public class MainActivity extends Activity implements SensorEventListener {
 					    angX += sensorEvent.values[0] * DTime * 180 / Math.PI;
 					    angY += sensorEvent.values[1] * DTime * 180 / Math.PI;
 					    angZ += sensorEvent.values[2] * DTime * 180 / Math.PI;
+					    /*angX = -1245;
+					    angY = 100;
+					    angZ = 2000;*/
 					    orientXValue.setText(Double.toString(angX));
 					    orientYValue.setText(Double.toString(angY));
 					    orientZValue.setText(Double.toString(angZ));
@@ -143,14 +162,14 @@ public class MainActivity extends Activity implements SensorEventListener {
 		    		}
 		    		orientTime = sensorEvent.timestamp;
 		    	}
-		    	
+		  
 		    	byte[] args = new byte[25]; 
-		    	for (int i=0; i<4; i++) args[i] = arg1[i];
-		    	for (int i=0; i<4; i++) args[i+4] = arg2[i];
-		    	for (int i=0; i<4; i++) args[i+8] = arg3[i];
-		    	for (int i=0; i<4; i++) args[i+12] = arg4[i];
-		    	for (int i=0; i<4; i++) args[i+16] = arg5[i];
-		    	for (int i=0; i<4; i++) args[i+20] = arg6[i];
+		    	for (int i=0; i<4; i++) args[i] = reverseBitsByte(arg1[3-i]);
+		    	for (int i=0; i<4; i++) args[i+4] = reverseBitsByte(arg2[3-i]);
+		    	for (int i=0; i<4; i++) args[i+8] = reverseBitsByte(arg3[3-i]);
+		    	for (int i=0; i<4; i++) args[i+12] = reverseBitsByte(arg4[3-i]);
+		    	for (int i=0; i<4; i++) args[i+16] = reverseBitsByte(arg5[3-i]);
+		    	for (int i=0; i<4; i++) args[i+20] = reverseBitsByte(arg6[3-i]);
 		    	args[24] = 65;
 		    	
 		    	udpClient.send(args);
@@ -211,5 +230,15 @@ public class MainActivity extends Activity implements SensorEventListener {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	private byte reverseBitsByte(byte x) {
+		int intSize = 8; 
+		byte y = 0; 
+		for (int position = intSize - 1; position >= 0; position--) { 
+			y += ((x & 1) << position);
+	        x >>= 1;
+		}
+		return y;
 	}
 }
