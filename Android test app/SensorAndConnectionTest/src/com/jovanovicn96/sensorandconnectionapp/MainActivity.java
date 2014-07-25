@@ -164,6 +164,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 			udpClient = new UDPClient(SERVER_IP, SERVERPORT, ResiveMessageLength);
 		} catch (Exception e) {
 			e.printStackTrace();
+			return;
 		}
     	Toast.makeText(MainActivity.this, "IP Changed", Toast.LENGTH_SHORT).show();
     }
