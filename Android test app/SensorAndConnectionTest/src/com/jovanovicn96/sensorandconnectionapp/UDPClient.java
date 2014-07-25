@@ -18,14 +18,11 @@ public class UDPClient {
 		resivemessln = resmessln;
 	}
 	
-	public void send(byte message[]){
+	public void send(byte message[]) throws IOException
+	{
 		byte[] sendData = message;
 		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
-		try {
-			clientSocket.send(sendPacket);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		clientSocket.send(sendPacket);
 	}
 	
 	public byte[] resive(){

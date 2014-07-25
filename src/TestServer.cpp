@@ -8,7 +8,7 @@ using namespace std;
 int main(int argc, char * argv[]) 
 {
 	UDPServer s(5000); 
-	while (true) 
+	while (1) 
 	{
 		char buf[25]; 
 		s.recieve(buf, 25); 
