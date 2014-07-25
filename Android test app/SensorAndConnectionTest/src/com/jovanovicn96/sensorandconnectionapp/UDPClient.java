@@ -11,6 +11,7 @@ public class UDPClient {
 	int port, resivemessln;
 	
 	public UDPClient(String IA, int po, int resmessln) throws Exception {
+		System.out.println("RACEMANIA: Creating socket");
 		inFromUser = new BufferedReader(new InputStreamReader(System.in));
 		clientSocket = new DatagramSocket();
 		IPAddress = InetAddress.getByName(IA);
@@ -20,6 +21,7 @@ public class UDPClient {
 	
 	public void send(byte message[]) throws IOException
 	{
+		System.out.println("RACEMANIA: Sending data");
 		byte[] sendData = message;
 		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
 		clientSocket.send(sendPacket);
@@ -38,6 +40,7 @@ public class UDPClient {
 	}
 	
 	public void close(){
+		System.out.println("RACEMANIA: Closing socket");
 		clientSocket.close();
 	}
 }

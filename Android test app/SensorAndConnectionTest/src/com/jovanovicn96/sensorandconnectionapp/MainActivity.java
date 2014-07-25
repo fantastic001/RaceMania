@@ -151,6 +151,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 			    	udpClient.send(args);
 			    } catch (Exception e) {
 			    	e.printStackTrace();
+				System.out.println("RACEMANIA: Error while sending data");
 			    }
 			    
 		    }
@@ -164,6 +165,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 			udpClient = new UDPClient(SERVER_IP, SERVERPORT, ResiveMessageLength);
 		} catch (Exception e) {
 			e.printStackTrace();
+			System.out.println("RACEMANIA: Error while changing ip adress");
 			return;
 		}
     	Toast.makeText(MainActivity.this, "IP Changed", Toast.LENGTH_SHORT).show();
