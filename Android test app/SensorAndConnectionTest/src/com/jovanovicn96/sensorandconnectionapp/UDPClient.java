@@ -19,12 +19,30 @@ public class UDPClient {
 		resivemessln = resmessln;
 	}
 	
-	public void send(byte message[]) throws IOException
+	public void send(byte message[]) 
 	{
 		System.out.println("RACEMANIA: Sending data");
 		byte[] sendData = message;
 		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
-		clientSocket.send(sendPacket);
+		try {
+			clientSocket.send(sendPacket);
+		} 
+		catch (SecurityException e) 
+		{
+			System.out.println("RACEMANIA: Security error");
+		}
+		catch (PortUnreachableException e) 
+		{
+			System.out.println("RACEMANIA: Port unreachable");
+		}
+		catch (IllegalArgumentException e) 
+		{
+			System.out.println("RACEMANIA: Something is messed up with packets and all shits sitting around.");
+		}
+		catch (IOException e) 
+		{
+			System.out.println("RACEMANIA: I/O error");
+		}
 	}
 	
 	public byte[] resive(){
