@@ -166,11 +166,23 @@ public class MainActivity extends Activity implements SensorEventListener {
     public void SetIP(View view){
     	SERVER_IP = IPadress.getText().toString();
     	udpClient.close();
+    	udpReciverObj.treminate();
+    	UDPRecive.interrupt();
+    	while (UDPRecive.isAlive()){
+	    	try {
+				UDPRecive.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+    	}
     	try {
 			udpClient = new UDPClient(SERVER_IP, SERVERPORT, ResiveMessageLength);
     	} catch (Exception e) {
     		System.out.println("RACEMANIA: Error while creating socket");
     	}
+    	udpReciverObj = new UDPReciver(this);
+        UDPRecive = new Thread(udpReciverObj);
+        UDPRecive.start();
     	Toast.makeText(MainActivity.this, "IP Changed", Toast.LENGTH_SHORT).show();
     }
     
