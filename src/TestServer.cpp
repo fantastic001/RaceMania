@@ -13,7 +13,7 @@ int main(int argc, char * argv[])
 	{
 		char buf[4];
 		s.recieve(buf, 4);
-		char ax,ay,az,ox,oy,oz;
+		char ax,ay,az;
 		int n = sizeof(int);
 		memcpy(&ax, buf, 1);
 		memcpy(&ay, buf+1, 1);
