@@ -33,9 +33,10 @@ public class MainActivity extends Activity implements SensorEventListener {
 	private TextView accelXValue;
 	private TextView accelYValue;
 	private TextView accelZValue;
-	byte[] arg1 = new byte[4];
-	byte[] arg2 = new byte[4];
-	byte[] arg3 = new byte[4];
+	//byte[] arg1 = new byte[4];
+	//byte[] arg2 = new byte[4];
+	//byte[] arg3 = new byte[4];
+	byte arg1, arg2, arg3;
 	
 	// Orientation X, Y, and Z values
 	private TextView orientXValue;
@@ -77,7 +78,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 			e.printStackTrace();
 		}
         
-        
         // Get a reference to a SensorManager
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         
@@ -114,12 +114,15 @@ public class MainActivity extends Activity implements SensorEventListener {
 				    accelXValue.setText(Float.toString(sensorEvent.values[0]));
 				    accelYValue.setText(Float.toString(sensorEvent.values[1]));
 				    accelZValue.setText(Float.toString(sensorEvent.values[2])); 
-			    	arg1 = new byte[4];
-			    	ByteBuffer.wrap(arg1).putInt(Math.round(sensorEvent.values[0] * 1000));
-			    	arg2 = new byte[4];
-			    	ByteBuffer.wrap(arg2).putInt(Math.round(sensorEvent.values[1] * 1000));
-			    	arg3 = new byte[4]; 
-			    	ByteBuffer.wrap(arg3).putInt(Math.round(sensorEvent.values[2] * 1000));
+			    	//arg1 = new byte[4];
+			    	//ByteBuffer.wrap(arg1).putInt(Math.round(sensorEvent.values[0]));
+				    arg1 = (byte) Math.round(sensorEvent.values[0]);
+			    	//arg2 = new byte[4];
+			    	//ByteBuffer.wrap(arg2).putInt(Math.round(sensorEvent.values[1]));
+				    arg2 = (byte) Math.round(sensorEvent.values[1]);
+			    	//arg3 = new byte[4]; 
+			    	//ByteBuffer.wrap(arg3).putInt(Math.round(sensorEvent.values[2]));
+				    arg3 = (byte) Math.round(sensorEvent.values[2]);
 		    	}
 		    	if (sensorEvent.sensor.getType() == Sensor.TYPE_GYROSCOPE){
 		    		if (orientTime != 0){
@@ -128,9 +131,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 					    angX += sensorEvent.values[0] * DTime * 180 / Math.PI;
 					    angY += sensorEvent.values[1] * DTime * 180 / Math.PI;
 					    angZ += sensorEvent.values[2] * DTime * 180 / Math.PI;
-					    /*angX = -1245;
-					    angY = 100;
-					    angZ = 2000;*/
 					    orientXValue.setText(Double.toString(angX));
 					    orientYValue.setText(Double.toString(angY));
 					    orientZValue.setText(Double.toString(angZ));
@@ -150,14 +150,17 @@ public class MainActivity extends Activity implements SensorEventListener {
 		    		orientTime = sensorEvent.timestamp;
 		    	}
 		  
-		    	byte[] args = new byte[25]; 
-		    	for (int i=0; i<4; i++) args[i] = reverseBitsByte(arg1[3-i]);
+		    	byte[] args = new byte[4]; 
+		    	/*for (int i=0; i<4; i++) args[i] = reverseBitsByte(arg1[3-i]);
 		    	for (int i=0; i<4; i++) args[i+4] = reverseBitsByte(arg2[3-i]);
-		    	for (int i=0; i<4; i++) args[i+8] = reverseBitsByte(arg3[3-i]);
-		    	for (int i=0; i<4; i++) args[i+12] = reverseBitsByte(arg4[3-i]);
+		    	for (int i=0; i<4; i++) args[i+8] = reverseBitsByte(arg3[3-i]);*/
+		    	args[0] = arg1;
+		    	args[1] = arg2;
+		    	args[2] = arg3;
+		    	/*for (int i=0; i<4; i++) args[i+12] = reverseBitsByte(arg4[3-i]);
 		    	for (int i=0; i<4; i++) args[i+16] = reverseBitsByte(arg5[3-i]);
-		    	for (int i=0; i<4; i++) args[i+20] = reverseBitsByte(arg6[3-i]);
-		    	args[24] = 65;
+		    	for (int i=0; i<4; i++) args[i+20] = reverseBitsByte(arg6[3-i]);*/
+		    	args[3] = 65;
 		    	
 		    	udpClient.send(args);
 		    	//System.out.println("RACEMANIA: Error while sending data");
