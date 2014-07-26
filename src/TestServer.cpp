@@ -53,8 +53,8 @@ int main(int argc, char * argv[])
 		int x = (int) ax; 
 		int y = (int) ay; 
 		int z = (int) az; 
-		
-		apply_surface( 300+x*10, 200+y*10, img, screen );
+		SDL_FillRect(screen, &screen->clip_rect, SDL_MapRGB(screen->format,0x00, 0x00, 0x00));
+		apply_surface( 240-x*20, 120+y*20, img, screen );
 
 		char indicator = buf[3];
 		cout <<(int)ax <<" " <<(int)ay <<" " <<(int)az <<" " <<indicator <<endl;
