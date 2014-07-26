@@ -77,19 +77,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 			e.printStackTrace();
 		}
         
-        int i, two;
-        
-        for (i=0; i<256; i++) byteSwap[i] = 0;
-        
-        for (i=0; i<256; i++){
-    		two=2;
-    		for (int j=0; j<7; j++){
-    			if (i % two == 1){
-    				byteSwap [i] += 128/two;
-    				two *= 2;
-    			}
-    		}
-        }
         
         // Get a reference to a SensorManager
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
