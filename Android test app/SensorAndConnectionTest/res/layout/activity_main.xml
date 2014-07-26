@@ -71,7 +71,7 @@
             android:id="@+id/orientation_label"
             android:layout_column="1"
             android:padding="3dip"
-            android:text="Orientation"
+            android:text="Recived values"
             android:textSize="9pt" />
     </TableRow>
 

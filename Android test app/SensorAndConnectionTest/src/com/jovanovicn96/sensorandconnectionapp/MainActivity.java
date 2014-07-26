@@ -1,7 +1,5 @@
 package com.jovanovicn96.sensorandconnectionapp;
 
-import java.nio.ByteBuffer;
-
 import android.app.Activity;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -28,14 +26,13 @@ public class MainActivity extends Activity implements SensorEventListener {
 	
 	// UDP/IP initializations
 	UDPClient udpClient;
+	UDPReciver udpReciverObj = new UDPReciver(this);
+    Thread UDPRecive = new Thread(udpReciverObj);
 	
 	// Accelerometer X, Y, and Z values
 	private TextView accelXValue;
 	private TextView accelYValue;
 	private TextView accelZValue;
-	//byte[] arg1 = new byte[4];
-	//byte[] arg2 = new byte[4];
-	//byte[] arg3 = new byte[4];
 	byte arg1, arg2, arg3;
 	
 	// Orientation X, Y, and Z values
@@ -103,6 +100,34 @@ public class MainActivity extends Activity implements SensorEventListener {
         orientXValue.setText("0.00");
         orientYValue.setText("0.00");
         orientZValue.setText("0.00");
+
+        UDPRecive.start();
+    }
+    
+    public class UDPReciver extends Thread {
+    	private MainActivity act;
+    	private volatile boolean run=true;
+    	public UDPReciver(MainActivity act){
+    		this.act = act;
+    	}
+    	public void treminate(){
+    		run = false;
+    	}
+		@Override
+		public void run() {
+			while (run && !act.isFinishing()){
+				byte[] rec;
+				rec = udpClient.resive();
+				act.onReciveUDPmessage(rec);
+			}
+		}
+		
+    }
+    
+    public void onReciveUDPmessage(byte[] mess){
+	    orientXValue.setText(mess[0]);
+	    orientYValue.setText(mess[1]);
+	    orientZValue.setText(mess[2]);
     }
   
     // This method will update the UI on new sensor events
@@ -113,58 +138,27 @@ public class MainActivity extends Activity implements SensorEventListener {
 		    	if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
 				    accelXValue.setText(Float.toString(sensorEvent.values[0]));
 				    accelYValue.setText(Float.toString(sensorEvent.values[1]));
-				    accelZValue.setText(Float.toString(sensorEvent.values[2])); 
-			    	//arg1 = new byte[4];
-			    	//ByteBuffer.wrap(arg1).putInt(Math.round(sensorEvent.values[0]));
-				    arg1 = (byte) Math.round(sensorEvent.values[0]);
-			    	//arg2 = new byte[4];
-			    	//ByteBuffer.wrap(arg2).putInt(Math.round(sensorEvent.values[1]));
-				    arg2 = (byte) Math.round(sensorEvent.values[1]);
-			    	//arg3 = new byte[4]; 
-			    	//ByteBuffer.wrap(arg3).putInt(Math.round(sensorEvent.values[2]));
-				    arg3 = (byte) Math.round(sensorEvent.values[2]);
-		    	}
-		    	if (sensorEvent.sensor.getType() == Sensor.TYPE_GYROSCOPE){
-		    		if (orientTime != 0){
-			    		double DTime = (sensorEvent.timestamp - orientTime)/1000000000.0f;
-			    		orientTime = System.nanoTime();
-					    angX += sensorEvent.values[0] * DTime * 180 / Math.PI;
-					    angY += sensorEvent.values[1] * DTime * 180 / Math.PI;
-					    angZ += sensorEvent.values[2] * DTime * 180 / Math.PI;
-					    orientXValue.setText(Double.toString(angX));
-					    orientYValue.setText(Double.toString(angY));
-					    orientZValue.setText(Double.toString(angZ));
-				    	arg4 = new byte[4];
-				    	ByteBuffer.wrap(arg4).putInt(Math.round(angX * 1000));
-				    	arg5 = new byte[4];
-				    	ByteBuffer.wrap(arg5).putInt(Math.round(angY * 1000));
-				    	arg6 = new byte[4]; 
-				    	ByteBuffer.wrap(arg6).putInt(Math.round(angZ * 1000));
-				    	progStat = -(int)angZ/2+50;
-				    	try {
-				    		seekBar.setProgress(progStat);
-				    	} catch (NullPointerException e){
-					    	e.printStackTrace();
-				    	}
-		    		}
-		    		orientTime = sensorEvent.timestamp;
+				    accelZValue.setText(Float.toString(sensorEvent.values[2]));
+				    arg1 = (byte) Math.round(sensorEvent.values[0]*8);
+				    arg2 = (byte) Math.round(sensorEvent.values[1]*8);
+				    arg3 = (byte) Math.round(sensorEvent.values[2]*8);
+
+			    	progStat = (int)arg2/2+50;
+			    	try {
+			    		seekBar.setProgress(progStat);
+			    	} catch (NullPointerException e){
+				    	e.printStackTrace();
+			    	}
 		    	}
 		  
-		    	byte[] args = new byte[4]; 
-		    	/*for (int i=0; i<4; i++) args[i] = reverseBitsByte(arg1[3-i]);
-		    	for (int i=0; i<4; i++) args[i+4] = reverseBitsByte(arg2[3-i]);
-		    	for (int i=0; i<4; i++) args[i+8] = reverseBitsByte(arg3[3-i]);*/
+		    	byte[] args = new byte[4];
 		    	args[0] = arg1;
 		    	args[1] = arg2;
 		    	args[2] = arg3;
-		    	/*for (int i=0; i<4; i++) args[i+12] = reverseBitsByte(arg4[3-i]);
-		    	for (int i=0; i<4; i++) args[i+16] = reverseBitsByte(arg5[3-i]);
-		    	for (int i=0; i<4; i++) args[i+20] = reverseBitsByte(arg6[3-i]);*/
 		    	args[3] = 65;
 		    	
 		    	udpClient.send(args);
 		    	//System.out.println("RACEMANIA: Error while sending data");
-			    
 		    }
 	    }
     }
@@ -172,13 +166,11 @@ public class MainActivity extends Activity implements SensorEventListener {
     public void SetIP(View view){
     	SERVER_IP = IPadress.getText().toString();
     	udpClient.close();
-	try {
-		udpClient = new UDPClient(SERVER_IP, SERVERPORT, ResiveMessageLength);
-	}
-	catch (Exception e) 
-	{
-		System.out.println("RACEMANIA: Error while creating socket");
-	}
+    	try {
+			udpClient = new UDPClient(SERVER_IP, SERVERPORT, ResiveMessageLength);
+    	} catch (Exception e) {
+    		System.out.println("RACEMANIA: Error while creating socket");
+    	}
     	Toast.makeText(MainActivity.this, "IP Changed", Toast.LENGTH_SHORT).show();
     }
     
@@ -195,13 +187,28 @@ public class MainActivity extends Activity implements SensorEventListener {
 	    // ...and the gyroscope sensor
 	    sensorManager.registerListener((SensorEventListener) this, sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE), SensorManager.SENSOR_DELAY_NORMAL);;
     }
+    
+    
   
     @Override
+	protected void onPause() {
+		super.onPause();
+    	udpReciverObj.treminate();
+    	UDPRecive.interrupt();
+    	while (UDPRecive.isAlive()){
+	    	try {
+				UDPRecive.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+    	}
+	}
+
+	@Override
     protected void onStop() {
     	udpClient.close();
 	    super.onStop();
     }
-	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -220,15 +227,5 @@ public class MainActivity extends Activity implements SensorEventListener {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-	
-	private byte reverseBitsByte(byte x) {
-		int intSize = 8; 
-		byte y = 0; 
-		for (int position = intSize - 1; position >= 0; position--) { 
-			y += ((x & 1) << position);
-	        x >>= 1;
-		}
-		return y;
 	}
 }
