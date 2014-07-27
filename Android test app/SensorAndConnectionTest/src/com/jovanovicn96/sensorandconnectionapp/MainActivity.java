@@ -22,8 +22,10 @@ import com.jovanovicn96.sensorandconnectionapp.UDPThread;
 public class MainActivity extends Activity implements SensorEventListener {
 
 	private static final int SERVERPORT = 5000;
-	private static String SERVER_IP = "192.168.1.104";
+	private static String SERVER_IP = "0.0.0.0";
 	
+	boolean listening = true; 
+
 	// Accelerometer X, Y, and Z values
 	private TextView accelXValue;
 	private TextView accelYValue;
@@ -92,12 +94,6 @@ public class MainActivity extends Activity implements SensorEventListener {
         orientXValue.setText("0.00");
         orientYValue.setText("0.00");
         orientZValue.setText("0.00");
-        
-        try {
-    		udpClient = new UDPClient(SERVERPORT);
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    	}
     }
     
     
@@ -121,8 +117,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     // This method will update the UI on new sensor events
     public void onSensorChanged(SensorEvent sensorEvent) {
 	    synchronized (this) {
-		    if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER ||
-		    		sensorEvent.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+		    if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER && listening) {
 		    	if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
 				    accelXValue.setText(Float.toString(sensorEvent.values[0]));
 				    accelYValue.setText(Float.toString(sensorEvent.values[1]));
@@ -166,6 +161,13 @@ public class MainActivity extends Activity implements SensorEventListener {
 	    sensorManager.registerListener((SensorEventListener) this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
 	    udpThread = new UDPThread(this); 
 	    udpThread.start();
+	    
+        try {
+    		udpClient = new UDPClient(SERVERPORT);
+		listening = true; 
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
     }
     
     
@@ -183,12 +185,14 @@ public class MainActivity extends Activity implements SensorEventListener {
 			System.out.println("RACEMANIA: Cannot join to thread");
 		}
 		udpThread = null;
+		listening = false; // Turn off listening for sensor
+		udpClient.close();
+		udpClient = null;
 	}
 
 	@Override
     protected void onStop() {
 	    super.onStop();
-    	udpClient.close();
     }
 
 	@Override
