@@ -11,7 +11,7 @@ public class UDPThread extends Thread {
 	UDPClient udpClient;
 
 	public UDPThread(MainActivity act) {
-    		this.act = act;
+    	this.act = act;
 		try {
 			udpClient = new UDPClient(5001);
 		} catch (Exception e) 
@@ -43,6 +43,8 @@ public class UDPThread extends Thread {
 			}
 			act.onReciveUDPmessage(rec);
 		}
+		udpClient.close();
+		udpClient = null;
 	}
 		
 }

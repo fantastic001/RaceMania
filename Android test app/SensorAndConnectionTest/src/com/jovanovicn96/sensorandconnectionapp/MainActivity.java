@@ -54,7 +54,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 	// UDP/IP initializations
 	UDPClient udpClient;
 	UDPThread udpThread;
-	//Thread UDPRecive = new Thread(udpReciverObj);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,11 +67,6 @@ public class MainActivity extends Activity implements SensorEventListener {
         }
         //pregressBar
         seekBar = (SeekBar) findViewById(R.id.seekBar1);
-        try {
-			udpClient = new UDPClient(SERVERPORT);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
         // Get a reference to a SensorManager
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         
@@ -98,6 +92,12 @@ public class MainActivity extends Activity implements SensorEventListener {
         orientXValue.setText("0.00");
         orientYValue.setText("0.00");
         orientZValue.setText("0.00");
+        
+        try {
+    		udpClient = new UDPClient(SERVERPORT);
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
     }
     
     
@@ -166,6 +166,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 	    sensorManager.registerListener((SensorEventListener) this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
 	    udpThread = new UDPThread(this); 
 	    udpThread.start();
+		System.out.println("RACEMANIA: Resumed");
     }
     
     
@@ -187,8 +188,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 
 	@Override
     protected void onStop() {
-    	udpClient.close();
 	    super.onStop();
+    	udpClient.close();
     }
 
 	@Override

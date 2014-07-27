@@ -5,15 +5,12 @@ import java.net.*;
 
 public class UDPClient {
 	
-	BufferedReader inFromUser;
 	DatagramSocket clientSocket;
 	int port;
 	
 	public UDPClient(int po) throws Exception {
-		inFromUser = new BufferedReader(new InputStreamReader(System.in));
 		clientSocket = new DatagramSocket(po);
 		clientSocket.setSoTimeout(200);
-		clientSocket.setReuseAddress(true);
 		port = po;
 	}
 	
