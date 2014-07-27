@@ -166,7 +166,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 	    sensorManager.registerListener((SensorEventListener) this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
 	    udpThread = new UDPThread(this); 
 	    udpThread.start();
-		System.out.println("RACEMANIA: Resumed");
     }
     
     
