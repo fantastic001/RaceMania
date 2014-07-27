@@ -17,17 +17,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jovanovicn96.sensorandconnectionapp.UDPClient;
+import com.jovanovicn96.sensorandconnectionapp.UDPThread;
 
 public class MainActivity extends Activity implements SensorEventListener {
 
 	private static final int SERVERPORT = 5000;
-	private static String SERVER_IP = "192.168.0.156";
-	private static final int ResiveMessageLength = 48;
-	
-	// UDP/IP initializations
-	UDPClient udpClient;
-	UDPReciver udpReciverObj = new UDPReciver(this);
-    Thread UDPRecive = new Thread(udpReciverObj);
+	private static String SERVER_IP = "192.168.1.104";
 	
 	// Accelerometer X, Y, and Z values
 	private TextView accelXValue;
@@ -55,7 +50,12 @@ public class MainActivity extends Activity implements SensorEventListener {
 	private EditText IPadress;
 	
 	private SensorManager sensorManager = null;
-	
+		
+	// UDP/IP initializations
+	UDPClient udpClient;
+	UDPThread udpThread;
+	//Thread UDPRecive = new Thread(udpReciverObj);
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,13 +68,12 @@ public class MainActivity extends Activity implements SensorEventListener {
         }
         //pregressBar
         seekBar = (SeekBar) findViewById(R.id.seekBar1);
-        
         try {
-			udpClient = new UDPClient(SERVER_IP, SERVERPORT, ResiveMessageLength);
+			udpClient = new UDPClient(SERVERPORT);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-        
+        udpThread = new UDPThread(this);
         // Get a reference to a SensorManager
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         
@@ -100,34 +99,25 @@ public class MainActivity extends Activity implements SensorEventListener {
         orientXValue.setText("0.00");
         orientYValue.setText("0.00");
         orientZValue.setText("0.00");
-
-        UDPRecive.start();
+        udpThread.start();
     }
     
-    public class UDPReciver extends Thread {
-    	private MainActivity act;
-    	private volatile boolean run=true;
-    	public UDPReciver(MainActivity act){
-    		this.act = act;
-    	}
-    	public void treminate(){
-    		run = false;
-    	}
-		@Override
-		public void run() {
-			while (run && !act.isFinishing()){
-				byte[] rec;
-				rec = udpClient.resive();
-				act.onReciveUDPmessage(rec);
-			}
-		}
-		
-    }
     
     public void onReciveUDPmessage(byte[] mess){
-	    orientXValue.setText(mess[0]);
-	    orientYValue.setText(mess[1]);
-	    orientZValue.setText(mess[2]);
+
+	    final int x = (int) mess[0]; 
+	    final int y = (int) mess[1];
+	    final int z = (int) mess[2];
+
+	    runOnUiThread(new Runnable(){
+	        @Override
+		public void run(){
+			
+			orientXValue.setText(Integer.toString(x));
+			orientYValue.setText(Integer.toString(y));
+			orientZValue.setText(Integer.toString(z));
+		}});
+
     }
   
     // This method will update the UI on new sensor events
@@ -156,33 +146,13 @@ public class MainActivity extends Activity implements SensorEventListener {
 		    	args[1] = arg2;
 		    	args[2] = arg3;
 		    	args[3] = 65;
-		    	
-		    	udpClient.send(args);
-		    	//System.out.println("RACEMANIA: Error while sending data");
+		    	udpClient.send(args, SERVER_IP);
 		    }
 	    }
     }
   
     public void SetIP(View view){
     	SERVER_IP = IPadress.getText().toString();
-    	udpClient.close();
-    	udpReciverObj.treminate();
-    	UDPRecive.interrupt();
-    	while (UDPRecive.isAlive()){
-	    	try {
-				UDPRecive.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-    	}
-    	try {
-			udpClient = new UDPClient(SERVER_IP, SERVERPORT, ResiveMessageLength);
-    	} catch (Exception e) {
-    		System.out.println("RACEMANIA: Error while creating socket");
-    	}
-    	udpReciverObj = new UDPReciver(this);
-        UDPRecive = new Thread(udpReciverObj);
-        UDPRecive.start();
     	Toast.makeText(MainActivity.this, "IP Changed", Toast.LENGTH_SHORT).show();
     }
     
@@ -205,15 +175,25 @@ public class MainActivity extends Activity implements SensorEventListener {
     @Override
 	protected void onPause() {
 		super.onPause();
-    	udpReciverObj.treminate();
-    	UDPRecive.interrupt();
-    	while (UDPRecive.isAlive()){
-	    	try {
-				UDPRecive.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-    	}
+		//udpThread.terminate();
+		/*udpReciverObj.treminate();
+		UDPRecive.interrupt();
+		while (UDPRecive.isAlive()){
+		    	try {
+					UDPRecive.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+		}*/
+		udpThread.terminate(); 
+		try 
+		{
+			udpThread.join();
+		} 
+		catch (Exception e) 
+		{
+			System.out.println("RACEMANIA: Cannot join to thread");
+		}
 	}
 
 	@Override

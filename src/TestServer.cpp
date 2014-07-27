@@ -33,6 +33,8 @@ int main(int argc, char * argv[])
 	UDPServer s(5000);
 	cout <<"TestServer" <<endl;
 	
+	UDPServer c(5001);
+
 	SDL_Surface* screen = NULL;
 	SDL_Init(SDL_INIT_EVERYTHING);
 
@@ -45,7 +47,6 @@ int main(int argc, char * argv[])
 		char buf[4];
 		s.recieve(buf, 4);
 		char ax,ay,az;
-		int n = sizeof(int);
 		memcpy(&ax, buf, 1);
 		memcpy(&ay, buf+1, 1);
 		memcpy(&az, buf+2, 1);
@@ -54,14 +55,14 @@ int main(int argc, char * argv[])
 		tosend[0] = ax; 
 		tosend[1] = ay; 
 		tosend[2] = az; 
-		s.send(tosend, 3, "192.168.1.105");
+		c.send(tosend, 3, "192.168.1.102");
 
 		int x = (int) ax; 
 		int y = (int) ay; 
 		int z = (int) az;
-		//x /= 8; 
-		//y /= 8; 
-		//z /= 8; 
+		x /= 8; 
+		y /= 8; 
+		z /= 8; 
 
 		SDL_FillRect(screen, &screen->clip_rect, SDL_MapRGB(screen->format,0x00, 0x00, 0x00));
 		apply_surface( 240-x*20, 120+y*20, img, screen );

@@ -7,44 +7,38 @@ public class UDPClient {
 	
 	BufferedReader inFromUser;
 	DatagramSocket clientSocket;
-	InetAddress IPAddress;
-	int port, resivemessln;
+	int port;
 	
-	public UDPClient(String IA, int po, int resmessln) throws Exception {
-		//System.out.println("RACEMANIA: Creating socket");
+	public UDPClient(int po) throws Exception {
 		inFromUser = new BufferedReader(new InputStreamReader(System.in));
-		clientSocket = new DatagramSocket();
-		IPAddress = InetAddress.getByName(IA);
+		clientSocket = new DatagramSocket(po);
+		clientSocket.setSoTimeout(1000);
+		clientSocket.setBroadcast(true);
+		clientSocket.setReuseAddress(true);
 		port = po;
-		resivemessln = resmessln;
 	}
 	
-	public void send(byte message[]) 
-	{
-		//System.out.println("RACEMANIA: Sending data");
-		byte[] sendData = message;
-		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+	public void send(byte message[], String IA) { 
 		try {
+			InetAddress IPAddress;
+			IPAddress = InetAddress.getByName(IA);
+			byte[] sendData = message;
+			DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
 			clientSocket.send(sendPacket);
 		} catch (Exception e){
 			e.printStackTrace();
 		}
 	}
 	
-	public byte[] resive(){
+	public byte[] resive(int resivemessln) throws IOException {
 		byte[] receiveData = new byte[resivemessln];
-		for (int i=0; i<48; i++) receiveData[i] = (byte) 0;
+		for (int i=0; i<resivemessln; i++) receiveData[i] = (byte) 0;
 		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-		try {
-			clientSocket.receive(receivePacket);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		clientSocket.receive(receivePacket);
 		return receiveData;
 	}
 	
 	public void close(){
-		System.out.println("RACEMANIA: Closing socket");
 		clientSocket.close();
 	}
 }
