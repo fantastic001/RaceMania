@@ -12,8 +12,7 @@ public class UDPClient {
 	public UDPClient(int po) throws Exception {
 		inFromUser = new BufferedReader(new InputStreamReader(System.in));
 		clientSocket = new DatagramSocket(po);
-		clientSocket.setSoTimeout(1000);
-		clientSocket.setBroadcast(true);
+		clientSocket.setSoTimeout(200);
 		clientSocket.setReuseAddress(true);
 		port = po;
 	}

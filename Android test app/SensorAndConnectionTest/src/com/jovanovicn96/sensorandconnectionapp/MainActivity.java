@@ -73,7 +73,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-        udpThread = new UDPThread(this);
         // Get a reference to a SensorManager
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         
@@ -99,7 +98,6 @@ public class MainActivity extends Activity implements SensorEventListener {
         orientXValue.setText("0.00");
         orientYValue.setText("0.00");
         orientZValue.setText("0.00");
-        udpThread.start();
     }
     
     
@@ -166,8 +164,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 	    super.onResume();
 	    // Register this class as a listener for the accelerometer sensor
 	    sensorManager.registerListener((SensorEventListener) this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-	    // ...and the gyroscope sensor
-	    sensorManager.registerListener((SensorEventListener) this, sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE), SensorManager.SENSOR_DELAY_NORMAL);;
+	    udpThread = new UDPThread(this); 
+	    udpThread.start();
     }
     
     
@@ -175,16 +173,6 @@ public class MainActivity extends Activity implements SensorEventListener {
     @Override
 	protected void onPause() {
 		super.onPause();
-		//udpThread.terminate();
-		/*udpReciverObj.treminate();
-		UDPRecive.interrupt();
-		while (UDPRecive.isAlive()){
-		    	try {
-					UDPRecive.join();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-		}*/
 		udpThread.terminate(); 
 		try 
 		{
@@ -194,6 +182,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 		{
 			System.out.println("RACEMANIA: Cannot join to thread");
 		}
+		udpThread = null;
 	}
 
 	@Override
