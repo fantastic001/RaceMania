@@ -5,7 +5,7 @@ void CApp::OnRender(float x, float y, float z) { // rendering screen
     glLoadIdentity();
 
     glBegin(GL_TRIANGLES);
-        glColor3f(1.0f, 0.0f, 0.0f);
+        glColor3f(z+0.4f, 0.0f, 0.0f);
         glVertex3f(x, y+0.4f, z);
         glVertex3f(x+0.4f, y-0.4f, z);
         glVertex3f(x-0.4f, y-0.4f, z);

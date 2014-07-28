@@ -18,7 +18,7 @@ class CApp {
     public:
         bool OnInit();
         void OnEvent(SDL_Event* Event);
-        void OnLoop();
+        float* OnLoop(char* buf);
         void OnRender(float x, float y, float z);
         void OnCleanup();
 };
