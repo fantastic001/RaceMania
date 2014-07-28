@@ -2,6 +2,7 @@
     #define _CAPP_H_
 
 #include <SDL/SDL.h>
+//#include <SDL/SDL_opengl.h>
 #include <gl/gl.h>
 #include <gl/glu.h>
 
@@ -18,7 +19,7 @@ class CApp {
         bool OnInit();
         void OnEvent(SDL_Event* Event);
         void OnLoop();
-        void OnRender();
+        void OnRender(float x, float y, float z);
         void OnCleanup();
 };
 

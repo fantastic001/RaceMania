@@ -23,15 +23,18 @@ bool CApp::OnInit() {
     if((Surf_Display = SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_GL_DOUBLEBUFFER | SDL_OPENGL)) == NULL) return false;
 
     // setting up some shit (should be different)
-    glClearColor(0, 0, 0, 0);
-    glClearDepth(1.0f);
     glViewport(0, 0, 640, 480);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearDepth(1.0);
+    glDepthFunc(GL_LESS);
+    glEnable(GL_DEPTH_TEST);
+    glShadeModel(GL_SMOOTH);
     glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0, 640, 480, 0, 1, -1);
     glMatrixMode(GL_MODELVIEW);
-    glEnable(GL_TEXTURE_2D);
+    gluPerspective(45, 640.0/480.0, 1, 500);
     glLoadIdentity();
+
+    SDL_WM_SetCaption("Test SDL openGL", NULL);
 
     return true;
 }
