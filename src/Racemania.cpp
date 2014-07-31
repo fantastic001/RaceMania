@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "CApp.h"
-#include "UDPServer.h"
+#include "Racemania.hpp"
+#include "net/UDPServer.hpp"
 
 CApp::CApp() {
     Surf_Display = NULL;

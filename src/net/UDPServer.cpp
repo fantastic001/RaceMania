@@ -2,7 +2,7 @@
 #ifndef RACEMANIA_UDPSERVER_HPP
 #define RACEMANIA_UDPSERVER_HPP
 
-#include "UDPServer.h"
+#include "UDPServer.hpp"
 
 using boost::asio::ip::udp;
 using namespace std;

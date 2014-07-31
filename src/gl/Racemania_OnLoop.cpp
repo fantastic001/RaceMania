@@ -1,4 +1,4 @@
-#include "CApp.h"
+#include "../Racemania.hpp"
 
 float* CApp::OnLoop(char* buf) {
     char a[3];
